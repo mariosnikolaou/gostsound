@@ -39,7 +39,7 @@
 
 #include <memory.h>
 #include "../YmTypes.h"
-#include "LZH.H"
+#include "lzh.h"
 
 /*
  * Additions

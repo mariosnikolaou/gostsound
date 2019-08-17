@@ -38,7 +38,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "YmMusic.h"
-#include "LZH/LZH.H"
+#include "lzh/lzh.h"
 
 static	ymu16 ymVolumeTable[16] =
 {	62,161,265,377,580,774,1155,1575,2260,3088,4570,6233,9330,13187,21220,32767};
@@ -610,7 +610,7 @@ FILE	*in;
 		fclose(in);
 
 		//---------------------------------------------------
-		// Transforme les donn‚es en donn‚es valides.
+		// Transforme les donnï¿½es en donnï¿½es valides.
 		//---------------------------------------------------
 		pBigMalloc = depackFile(fileSize);
 		if (!pBigMalloc)
@@ -619,7 +619,7 @@ FILE	*in;
 		}
 
 		//---------------------------------------------------
-		// Lecture des donn‚es YM:
+		// Lecture des donnï¿½es YM:
 		//---------------------------------------------------
 		if (!ymDecode())
 		{
@@ -661,7 +661,7 @@ ymbool	CYmMusic::loadMemory(void *pBlock,ymu32 size)
 		memcpy(pBigMalloc,pBlock,size);
 
 		//---------------------------------------------------
-		// Transforme les donn‚es en donn‚es valides.
+		// Transforme les donnï¿½es en donnï¿½es valides.
 		//---------------------------------------------------
 		pBigMalloc = depackFile(size);
 		if (!pBigMalloc)
@@ -670,7 +670,7 @@ ymbool	CYmMusic::loadMemory(void *pBlock,ymu32 size)
 		}
 
 		//---------------------------------------------------
-		// Lecture des donn‚es YM:
+		// Lecture des donnï¿½es YM:
 		//---------------------------------------------------
 		if (!ymDecode())
 		{
