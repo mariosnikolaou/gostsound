@@ -1,0 +1,9 @@
+# Objectfiles and libraries
+*.o
+*.a
+
+# Main executable
+gostsound
+
+# Vscode files
+.vscode
