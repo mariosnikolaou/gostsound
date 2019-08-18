@@ -1,7 +1,7 @@
 package main
 
 // #cgo CFLAGS: -g -Wall
-// #cgo LDFLAGS: -L${SRCDIR}/StSoundLibrary -L${SRCDIR}/StSoundLibrary/LZH -lstsound -llzh -lc++
+// #cgo LDFLAGS: -L${SRCDIR}/StSoundLibrary -L${SRCDIR}/StSoundLibrary/lzh -lstsound -llzh -lc++
 // #include <stdlib.h>
 // #include "StSoundLibrary/StSoundLibrary.h"
 import "C"

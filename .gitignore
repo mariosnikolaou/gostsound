@@ -7,3 +7,6 @@ gostsound
 
 # Vscode files
 .vscode
+
+# General macOS
+.DS_Store
