@@ -8,6 +8,8 @@ import "C"
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"unsafe"
 
 	"github.com/hajimehoshi/oto"
@@ -30,11 +32,18 @@ func main() {
 	pMusic := C.ymMusicCreate()
 	defer C.free(unsafe.Pointer(pMusic))
 
-	cfilename := C.CString(filename)
-	defer C.free(unsafe.Pointer(cfilename))
+	// Read file
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not read file %s", filename)
+	}
+	fmt.Printf("Size of data: %d\n", len(data))
 
-	C.ymMusicLoad(pMusic, cfilename)
+	cdata := C.CBytes(data)
+	defer C.free(unsafe.Pointer(cdata))
+	C.ymMusicLoadMemory(pMusic, cdata, C.uint(len(data)))
 
+	// Get and print music info
 	info := C.ymMusicInfo_t{}
 	C.ymMusicGetInfo(pMusic, &info)
 
@@ -46,6 +55,7 @@ func main() {
 	fmt.Println("musicTimeInSec: ", info.musicTimeInSec)
 	fmt.Println("musicTimeInMs:  ", info.musicTimeInMs)
 
+	// Setup music playback
 	C.ymMusicSetLoopMode(pMusic, C.YMFALSE)
 	C.ymMusicStop(pMusic)
 	C.ymMusicPlay(pMusic)

@@ -166,7 +166,7 @@ unsigned char	*CYmMusic::depackFile(ymu32 checkOriginalSize)
 		if (packedSize <= checkOriginalSize)
 		{
 			// alloc space for depacker and depack data
-			CLzhDepacker *pDepacker = new CLzhDepacker;	
+			CLzhDepacker *pDepacker = new CLzhDepacker;
 			const bool bRet = pDepacker->LzUnpack(pSrc,packedSize,pNew,fileSize);
 			delete pDepacker;
 
@@ -188,22 +188,6 @@ unsigned char	*CYmMusic::depackFile(ymu32 checkOriginalSize)
 		free(pBigMalloc);
 
 		return pNew;
- }
-
-
-
-
-
-static ymint	fileSizeGet(FILE *h)
- {
- ymint size;
- ymint old;
-
-		old = ftell(h);
-		fseek(h,0,SEEK_END);
-		size = ftell(h);
-		fseek(h,old,SEEK_SET);
-		return size;
  }
 
 
@@ -269,7 +253,7 @@ ymbool	CYmMusic::ymDecode(void)
  ymu32 sampleSize;
  yms32 tmp;
  ymu32 id;
- 
+
 
 		id = ReadBigEndian32((unsigned char*)pBigMalloc);
 		switch (id)
@@ -540,7 +524,7 @@ ymbool	CYmMusic::ymDecode(void)
 		return YMTRUE;
  }
 
- 
+
 ymbool	CYmMusic::checkCompilerTypes()
 {
 	setLastError("Basic types size are not correct (check ymTypes.h)");
@@ -566,73 +550,6 @@ ymbool	CYmMusic::checkCompilerTypes()
 	return YMTRUE;
 }
 
-
-ymbool	CYmMusic::load(const char *fileName)
-{
-FILE	*in;
-
-
-		stop();
-		unLoad();
-
-		if (!checkCompilerTypes())
-			return YMFALSE;
-
-		in = fopen(fileName,"rb");
-		if (!in)
-		{
-			setLastError("File not Found");
-			return YMFALSE;
-		}
-
-		//---------------------------------------------------
-		// Allocation d'un buffer pour lire le fichier.
-		//---------------------------------------------------
-		fileSize = fileSizeGet(in);
-		pBigMalloc = (unsigned char*)malloc(fileSize);
-		if (!pBigMalloc)
-		{
-			setLastError("MALLOC Error");
-			fclose(in);
-			return YMFALSE;
-		}
-
-		//---------------------------------------------------
-		// Chargement du fichier complet.
-		//---------------------------------------------------
-		if (fread(pBigMalloc,1,fileSize,in)!=(size_t)fileSize)
-		{
-			free(pBigMalloc);
-			setLastError("File is corrupted.");
-			fclose(in);
-			return YMFALSE;
-		}
-		fclose(in);
-
-		//---------------------------------------------------
-		// Transforme les donn�es en donn�es valides.
-		//---------------------------------------------------
-		pBigMalloc = depackFile(fileSize);
-		if (!pBigMalloc)
-		{
-			return YMFALSE;
-		}
-
-		//---------------------------------------------------
-		// Lecture des donn�es YM:
-		//---------------------------------------------------
-		if (!ymDecode())
-		{
-			free(pBigMalloc);
-			pBigMalloc = NULL;
-			return YMFALSE;
-		}
-
-		ymChip.reset();
-		bMusicOk = YMTRUE;
-		bPause = YMFALSE;
-		return YMTRUE;
- }
 
 ymbool	CYmMusic::loadMemory(void *pBlock,ymu32 size)
 {

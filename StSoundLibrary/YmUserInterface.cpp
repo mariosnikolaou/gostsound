@@ -46,13 +46,6 @@ YMMUSIC	* ymMusicCreate()
 	return (YMMUSIC*)(new CYmMusic);
 }
 
-
-ymbool ymMusicLoad(YMMUSIC *pMus, const char *fName)
-{
-	CYmMusic *pMusic = (CYmMusic*)pMus;
-	return pMusic->load(fName);
-}
-
 ymbool ymMusicLoadMemory(YMMUSIC *pMus, void *pBlock, ymu32 size)
 {
 	CYmMusic *pMusic = (CYmMusic*)pMus;
@@ -151,4 +144,3 @@ void ymMusicSetLowpassFiler(YMMUSIC *_pMus, ymbool bActive)
 	CYmMusic *pMusic = (CYmMusic*)_pMus;
 	pMusic->setLowpassFilter(bActive);
 }
-

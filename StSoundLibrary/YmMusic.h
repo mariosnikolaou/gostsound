@@ -131,7 +131,6 @@ public:
 	CYmMusic(ymint _replayRate=44100);
 	~CYmMusic();
 
-	ymbool	load(const char *pName);
 	ymbool	loadMemory(void *pBlock,ymu32 size);
 
 	void	unLoad(void);
