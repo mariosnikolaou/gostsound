@@ -1,10 +1,10 @@
 /*-----------------------------------------------------------------------------
 
-	ST-Sound ( YM files player library )
+        ST-Sound ( YM files player library )
 
-	Sample datas of some common YM music. ( YM2 format )
-	YM3 or greater uses sample data inside the music file.
-	
+        Sample datas of some common YM music. ( YM2 format )
+        YM3 or greater uses sample data inside the music file.
+        
 -----------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------
@@ -38,8 +38,7 @@
 #ifndef __DIGIDRUM__
 #define __DIGIDRUM__
 
-extern ymu8		*	sampleAdress[];
-extern ymu32		sampleLen[];
+extern ymu8 *sampleAdress[];
+extern ymu32 sampleLen[];
 
 #endif
-

@@ -1,8 +1,8 @@
 /*-----------------------------------------------------------------------------
 
-	ST-Sound ( YM files player library )
+        ST-Sound ( YM files player library )
 
-	Manage YM file depacking and parsing
+        Manage YM file depacking and parsing
 
 -----------------------------------------------------------------------------*/
 
@@ -35,24 +35,22 @@
 -----------------------------------------------------------------------------*/
 
 #ifndef __YMLOAD__
-#define	__YMLOAD__
+#define __YMLOAD__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
 #pragma pack(1)
-typedef struct
-{
-	ymu8	size;
-	ymu8	sum;
-	char	id[5];
-	ymu32	packed;
-	ymu32	original;
-	ymu8	reserved[5];
-	ymu8	level;
-	ymu8	name_lenght;
+typedef struct {
+  ymu8 size;
+  ymu8 sum;
+  char id[5];
+  ymu32 packed;
+  ymu32 original;
+  ymu8 reserved[5];
+  ymu8 level;
+  ymu8 name_lenght;
 } lzhHeader_t;
 #pragma pack()
 
@@ -61,5 +59,3 @@ typedef struct
 #endif
 
 #endif
-
-

@@ -1,8 +1,8 @@
 /*-----------------------------------------------------------------------------
 
-	ST-Sound ( YM files player library )
+        ST-Sound ( YM files player library )
 
-	ST-Sound library "C-like" interface wrapper
+        ST-Sound library "C-like" interface wrapper
 
 -----------------------------------------------------------------------------*/
 
@@ -34,113 +34,91 @@
 *
 -----------------------------------------------------------------------------*/
 
-
-#include "YmMusic.h"
 #include "StSoundLibrary.h"
-
+#include "YmMusic.h"
 
 // Static assert to check various type len
 
-YMMUSIC	* ymMusicCreate()
-{
-	return (YMMUSIC*)(new CYmMusic);
+YMMUSIC *ymMusicCreate() { return (YMMUSIC *)(new CYmMusic); }
+
+ymbool ymMusicLoadMemory(YMMUSIC *pMus, void *pBlock, ymu32 size) {
+  CYmMusic *pMusic = (CYmMusic *)pMus;
+  return pMusic->loadMemory(pBlock, size);
 }
 
-ymbool ymMusicLoadMemory(YMMUSIC *pMus, void *pBlock, ymu32 size)
-{
-	CYmMusic *pMusic = (CYmMusic*)pMus;
-	return pMusic->loadMemory(pBlock,size);
+void ymMusicDestroy(YMMUSIC *pMus) {
+  CYmMusic *pMusic = (CYmMusic *)pMus;
+  delete pMusic;
 }
 
-void ymMusicDestroy(YMMUSIC *pMus)
-{
-	CYmMusic *pMusic = (CYmMusic*)pMus;
-	delete pMusic;
+ymbool ymMusicCompute(YMMUSIC *_pMus, ymsample *pBuffer, int nbSample) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  return pMusic->update(pBuffer, nbSample);
 }
 
-ymbool ymMusicCompute(YMMUSIC *_pMus, ymsample *pBuffer, int nbSample)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	return pMusic->update(pBuffer,nbSample);
+void ymMusicSetLoopMode(YMMUSIC *_pMus, ymbool bLoop) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  pMusic->setLoopMode(bLoop);
 }
 
-void ymMusicSetLoopMode(YMMUSIC *_pMus, ymbool bLoop)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	pMusic->setLoopMode(bLoop);
+const char *ymMusicGetLastError(YMMUSIC *_pMus) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  return pMusic->getLastError();
 }
 
-const char * ymMusicGetLastError(YMMUSIC *_pMus)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	return pMusic->getLastError();
+int ymMusicGetRegister(YMMUSIC *_pMus, ymint reg) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  return pMusic->readYmRegister(reg);
 }
 
-int ymMusicGetRegister(YMMUSIC *_pMus, ymint reg)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	return pMusic->readYmRegister(reg);
+void ymMusicGetInfo(YMMUSIC *_pMus, ymMusicInfo_t *pInfo) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  pMusic->getMusicInfo(pInfo);
 }
 
-void ymMusicGetInfo(YMMUSIC *_pMus, ymMusicInfo_t *pInfo)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	pMusic->getMusicInfo(pInfo);
+void ymMusicPlay(YMMUSIC *_pMus) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  pMusic->play();
 }
 
-void ymMusicPlay(YMMUSIC *_pMus)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	pMusic->play();
+void ymMusicPause(YMMUSIC *_pMus) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  pMusic->pause();
 }
 
-void ymMusicPause(YMMUSIC *_pMus)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	pMusic->pause();
+void ymMusicStop(YMMUSIC *_pMus) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  pMusic->stop();
 }
 
-void ymMusicStop(YMMUSIC *_pMus)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	pMusic->stop();
+ymbool ymMusicIsOver(YMMUSIC *_pMus) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  return (pMusic->getMusicOver());
 }
 
-ymbool ymMusicIsOver(YMMUSIC *_pMus)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	return (pMusic->getMusicOver());
+ymbool ymMusicIsSeekable(YMMUSIC *_pMus) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  return pMusic->isSeekable() ? YMTRUE : YMFALSE;
 }
 
-ymbool ymMusicIsSeekable(YMMUSIC *_pMus)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	return pMusic->isSeekable() ? YMTRUE : YMFALSE;
+ymu32 ymMusicGetPos(YMMUSIC *_pMus) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  return pMusic->getPos();
 }
 
-ymu32 ymMusicGetPos(YMMUSIC *_pMus)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	return pMusic->getPos();
+void ymMusicSeek(YMMUSIC *_pMus, ymu32 timeInMs) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  if (pMusic->isSeekable()) {
+    pMusic->setMusicTime(timeInMs);
+  }
 }
 
-void ymMusicSeek(YMMUSIC *_pMus, ymu32 timeInMs)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	if (pMusic->isSeekable())
-	{
-		pMusic->setMusicTime(timeInMs);
-	}
+void ymMusicRestart(YMMUSIC *_pMus) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  pMusic->restart();
 }
 
-void ymMusicRestart(YMMUSIC *_pMus)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	pMusic->restart();
-}
-
-void ymMusicSetLowpassFiler(YMMUSIC *_pMus, ymbool bActive)
-{
-	CYmMusic *pMusic = (CYmMusic*)_pMus;
-	pMusic->setLowpassFilter(bActive);
+void ymMusicSetLowpassFiler(YMMUSIC *_pMus, ymbool bActive) {
+  CYmMusic *pMusic = (CYmMusic *)_pMus;
+  pMusic->setLowpassFilter(bActive);
 }
