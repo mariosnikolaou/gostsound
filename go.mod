@@ -1,5 +1,5 @@
 module github.com/mariosnikolaou/gostsound
 
-go 1.13
+go 1.16
 
-require github.com/hajimehoshi/oto v0.5.0
+require github.com/hajimehoshi/oto v0.7.1

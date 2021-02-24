@@ -8,8 +8,8 @@ import "C"
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"unsafe"
 
 	"github.com/hajimehoshi/oto"
@@ -33,7 +33,7 @@ func main() {
 	defer C.free(unsafe.Pointer(pMusic))
 
 	// Read file
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		log.Fatalf("Could not read file %s", filename)
 	}
