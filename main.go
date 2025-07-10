@@ -5,43 +5,56 @@ package main
 // #include <stdlib.h>
 // #include "StSoundLibrary/StSoundLibrary.h"
 import "C"
+
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
-	"unsafe"
+	"time"
 
-	"github.com/hajimehoshi/oto"
+	"github.com/ebitengine/oto/v3"
 )
 
 const (
-	sampleRate      = 44100
-	channelNum      = 1
-	bitDepthInBytes = 2
-	sampleWindow    = 1024
+	sampleRate   = 44100
+	channelNum   = 1
+	sampleWindow = 1024
 )
 
 func main() {
 	flag.Parse()
 	args := flag.Args()
 
+	if len(args) == 0 {
+		fmt.Println("Usage: gostsound <filename>")
+		return
+	}
+
 	filename := args[0]
 	fmt.Println("Reading: ", filename)
 
 	pMusic := C.ymMusicCreate()
-	defer C.free(unsafe.Pointer(pMusic))
+	if pMusic == nil {
+		log.Fatal("ymMusicCreate failed")
+	}
+	defer C.ymMusicDestroy(pMusic)
 
 	// Read file
 	data, err := os.ReadFile(filename)
 	if err != nil {
-		log.Fatalf("Could not read file %s", filename)
+		log.Fatalf("Could not read file %s: %v", filename, err)
 	}
 	fmt.Printf("Size of data: %d\n", len(data))
 
 	cdata := C.CBytes(data)
-	defer C.free(unsafe.Pointer(cdata))
-	C.ymMusicLoadMemory(pMusic, cdata, C.uint(len(data)))
+	defer C.free(cdata)
+
+	if C.ymMusicLoadMemory(pMusic, cdata, C.uint(len(data))) == C.YMFALSE {
+		errMsg := C.GoString(C.ymMusicGetLastError(pMusic))
+		log.Fatalf("ymMusicLoadMemory failed: %s", errMsg)
+	}
 
 	// Get and print music info
 	info := C.ymMusicInfo_t{}
@@ -62,30 +75,50 @@ func main() {
 
 	// Allocate buffer (little-endian 16 bit, mono 44100 Hz)
 	buf := C.malloc(C.sizeof_ymsample * sampleWindow * 2)
-	defer C.free(unsafe.Pointer(buf))
+	defer C.free(buf)
 
-	// Create the player
-	ctx, err := oto.NewContext(sampleRate, channelNum, bitDepthInBytes, 4096)
+	// Create the context and player
+	op := &oto.NewContextOptions{
+		SampleRate:   sampleRate,
+		ChannelCount: channelNum,
+		Format:       oto.FormatSignedInt16LE,
+	}
+	ctx, ready, err := oto.NewContext(op)
 	if err != nil {
-		panic(err)
+		log.Fatalf("oto.NewContext failed: %v", err)
 	}
-	p := ctx.NewPlayer()
+	<-ready
 
-	// Compute next buffer and copy to player (blocking)
-	for {
-		done := C.ymMusicCompute(pMusic, (*C.ymsample)(buf), sampleWindow)
-		if done == C.YMFALSE {
-			break
+	r, w := io.Pipe()
+
+	p := ctx.NewPlayer(r)
+	p.Play()
+
+	var playerErr error
+	go func() {
+		defer w.Close()
+		for {
+			done := C.ymMusicCompute(pMusic, (*C.ymsample)(buf), sampleWindow)
+			if done == C.YMFALSE {
+				break
+			}
+			_, err := w.Write(C.GoBytes(buf, sampleWindow*2))
+			if err != nil {
+				playerErr = err
+				return
+			}
 		}
-		_, err = p.Write(C.GoBytes(buf, sampleWindow*2))
-		if err != nil {
-			panic(err)
-		}
+	}()
+
+	for p.IsPlaying() {
+		time.Sleep(100 * time.Millisecond)
 	}
 
-	err = p.Close()
-	if err != nil {
-		panic(err)
+	if playerErr != nil {
+		log.Fatalf("error during playback: %v", playerErr)
 	}
 
+	if err := p.Close(); err != nil {
+		log.Fatalf("player.Close failed: %v", err)
+	}
 }
